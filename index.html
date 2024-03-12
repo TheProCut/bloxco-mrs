@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Bloxco Supermarket</title>
+  <link rel="icon" type="image/png" href="https://bloxco.org/src/media/graphics/BloxcoGraphics/BloxcoSiteIcon.png">
+  <link href="https://bloxco.org/src/code/css/bloxco.css" rel="stylesheet">
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    #userData {
+      color: white;
+      font-size: 24px;
+    }
+
+    .important-blue {
+      color: #2049A4;
+    }
+  </style>
+</head>
+
+<body class="dark-mode">
+
+  <nav class="navbar navbar-expand-lg text-light dark-mode" style="margin-bottom: 10px;" id="navbar">
+    <div class="container-fluid">
+      <img class="navbar-brand" style="height:100px;width:150px;"
+        src="https://bloxco.org/src/media/graphics/BloxcoGraphics/BloxcoNavBrand.png" draggable="false" id="nav-logo" />
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-maincontent"
+        aria-controls="nav-maincontent" aria-expanded="false" aria-label="Toggle navigation"
+        style="filter: invert(0.5);">
+        <span class="navbar-toggler-icon" style="filter: invert(0.5);"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav-maincontent">
+      </div>
+      <form class="d-flex" id="nav-addon">
+      </form>
+    </div>
+  </nav>
+
+  <div id="alert-container">
+
+  </div>
+  <br />
+
+  <div class="container mt-4">
+    <h1><span class="important-blue">Welcome</span> <span id="username"></span><span class="important-blue">!</span></h1>
+    <div id="userData"></div>
+  </div>
+
+  <br /><br />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+  <script src="https://bloxco.org/src/code/js/main.js"></script>
+  <script src="https://bloxco.org/src/code/js/countdown.js"></script>
+  <script>
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    var usernameParam = getParameterByName('username');
+
+    if (usernameParam) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      document.getElementById('username').textContent = usernameParam;
+
+      fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQTG-5jUYMd61er3axMjPsjSaKeVSW3t3NpoQNtUotMTHZGkx6zpU0QEUt3PAbw_HyQuel8q7RHQkY4/pub?gid=0&single=true&output=csv')
+        .then(response => response.text())
+        .then(data => {
+          var rows = data.split('\n');
+
+          var rowData = rows.find(row => {
+            var columns = row.split(',');
+            return columns[2] === usernameParam;
+          });
+
+          if (rowData) {
+            var columns = rowData.split(',');
+            var shifts = columns[5];
+            var trainings = columns[6];
+            var strikes = columns[7];
+
+            document.getElementById('userData').innerHTML =
+              `<p><span class="important-blue">Shifts:</span> ${shifts}</p>` +
+              `<p><span class="important-blue">Trainings:</span> ${trainings}</p>` +
+              `<p><span class="important-blue">Strikes:</span> ${strikes}</p>`;
+          } else {
+            document.getElementById('userData').innerHTML = "<p>User not found</p>";
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('userData').innerHTML = "<p>Error retrieving data</p>";
+        });
+    } else {
+      window.location.href = 'https://auth.bloxco.org/mr';
+    }
+  </script>
+</body>
+
+<footer class="darkmode text-center" id="ftr"></footer>
+
+</html>
