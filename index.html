@@ -85,7 +85,7 @@
       window.history.replaceState({}, document.title, window.location.pathname);
       document.getElementById('username').textContent = usernameParam;
 
-      fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQTG-5jUYMd61er3axMjPsjSaKeVSW3t3NpoQNtUotMTHZGkx6zpU0QEUt3PAbw_HyQuel8q7RHQkY4/pub?gid=0&single=true&output=csv')
+      fetch(process.env.sheet)
         .then(response => response.text())
         .then(data => {
           var rows = data.split('\n');
